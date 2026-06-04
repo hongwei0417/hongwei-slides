@@ -37,7 +37,7 @@ const signal = {
   blue: '#1F4F7A',
 };
 
-const TOTAL = 31;
+const TOTAL = 29;
 
 const fill = {
   width: '100%',
@@ -203,7 +203,7 @@ const Cover: Page = () => {
 
       <div style={anim}>
         <div style={{ marginTop: 60 }}>
-          <Eyebrow>決策簡報 · 二十六週 · 兩位 RD</Eyebrow>
+          <Eyebrow>決策簡報 · 三十九週 · 兩位 RD</Eyebrow>
         </div>
 
         <h1
@@ -234,7 +234,7 @@ const Cover: Page = () => {
           }}
         >
           <span style={{ color: ink, fontWeight: 500 }}>@moxa/graph v3 → v4。</span>{' '}
-          淘汰 AntV G6,改採 PixiJS v8。六個月、觸發機制驅動的 v4.0 GA 計畫。
+          淘汰 AntV G6,改採 PixiJS v8。九個月、觸發機制驅動的 v4.0 GA 計畫 (Route B3 baseline)。
         </p>
       </div>
 
@@ -454,9 +454,9 @@ const Decision: Page = () => {
             maxWidth: 1550,
           }}
         >
-          核准 <span style={{ color: accent }}>80%</span> RD 投入、
+          核准 <span style={{ color: accent }}>60%</span> RD 投入、
           <br />
-          兩位工程師、二十六週。
+          兩位工程師、三十九週。
         </h2>
 
         <p
@@ -469,7 +469,7 @@ const Decision: Page = () => {
             marginTop: 48,
           }}
         >
-          整份簡報的範圍、時程、風險機制與敏感度分析,都從這個數字推導而來。低於 80%,我們按公開規則自動縮減範圍 — 不是靠加班補回時程。
+          整份簡報的範圍、時程、風險機制與敏感度分析,都從這個數字推導而來。低於 60%,我們按公開規則自動縮減範圍 (Round 2 砍除) 或順延至 B2 路線 (14.5 個月) — 不是靠加班補回時程。
         </p>
       </div>
 
@@ -592,7 +592,7 @@ const DividerII: Page = () => (
     chapter={2}
     name="選型"
     lede="在 PixiJS、Cytoscape、AntV G6 之間做完成本與長期戰略比較。底層選擇是其餘所有決策的根基。報告於 2026-05-18 拍板。"
-    pages={['三個候選', '為何離開 G6', '維度對照', '加權評分']}
+    pages={['三個候選', '為何離開 G6', '維度對照', '綜合權衡矩陣', '加權總分']}
     n={5}
   />
 );
@@ -1068,7 +1068,243 @@ const Comparison: Page = () => {
   );
 };
 
-// ─── Page 9 · Scoring matrix ────────────────────────────────────────────────
+// ─── Page 9 · Scoring matrix (full 13-dim) ─────────────────────────────────
+
+const MatrixScore = ({ score, top }: { score: number; top?: boolean }) => (
+  <div
+    style={{
+      fontFamily: 'var(--osd-font-display)',
+      fontSize: 28,
+      fontWeight: 700,
+      color: top ? accent : ink,
+      lineHeight: 1,
+      textAlign: 'center',
+      letterSpacing: '-0.01em',
+      background: top ? washDeep : 'transparent',
+      padding: '4px 0',
+    }}
+  >
+    {score}
+  </div>
+);
+
+const MatrixRow = ({
+  axis,
+  weight,
+  g6,
+  cyto,
+  pixi,
+}: {
+  axis: string;
+  weight?: string;
+  g6: number;
+  cyto: number;
+  pixi: number;
+}) => {
+  const max = Math.max(g6, cyto, pixi);
+  const weightColor = weight === '最高' ? accent : weight === '高' ? ink : muted;
+  return (
+    <div
+      style={{
+        display: 'grid',
+        gridTemplateColumns: '300px 90px 1fr 1fr 1fr',
+        gap: 28,
+        padding: '7px 0',
+        borderBottom: `1px solid ${hairline}`,
+        alignItems: 'center',
+      }}
+    >
+      <div
+        style={{
+          fontFamily: 'var(--osd-font-display)',
+          fontSize: 19,
+          fontWeight: 700,
+          color: ink,
+          lineHeight: 1.3,
+        }}
+      >
+        {axis}
+      </div>
+      <div
+        style={{
+          fontFamily: 'var(--osd-font-body)',
+          fontSize: 12,
+          letterSpacing: '0.18em',
+          color: weightColor,
+          fontWeight: 700,
+        }}
+      >
+        {weight ?? '—'}
+      </div>
+      <MatrixScore score={g6} top={g6 === max} />
+      <MatrixScore score={cyto} top={cyto === max} />
+      <MatrixScore score={pixi} top={pixi === max} />
+    </div>
+  );
+};
+
+const ScoringMatrix: Page = () => {
+  const anim = useEntrance();
+  return (
+    <div
+      style={{
+        ...fill,
+        background: 'var(--osd-bg)',
+        color: 'var(--osd-text)',
+        padding: '150px 140px 130px',
+      }}
+    >
+      <TopRule chapter={2} chapterName="選型" label="綜合權衡矩陣" />
+
+      <div style={anim}>
+        <Eyebrow>綜合權衡矩陣 · 13 維度 × 5 分制</Eyebrow>
+
+        <h2
+          style={{
+            fontFamily: 'var(--osd-font-display)',
+            fontSize: 42,
+            fontWeight: 700,
+            lineHeight: 1.2,
+            letterSpacing: '0.01em',
+            margin: '16px 0 4px 0',
+            maxWidth: 1500,
+          }}
+        >
+          13 個維度 · 逐項拆解 · 加權彙整。
+        </h2>
+
+        <p
+          style={{
+            fontSize: 16,
+            color: muted,
+            marginTop: 4,
+            marginBottom: 18,
+            maxWidth: 1500,
+            lineHeight: 1.45,
+          }}
+        >
+          5 = 最佳 · 1 = 最弱 · 以 SCADA 需求 profile 加權。每列最高分以 accent 標示。
+        </p>
+
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: '300px 90px 1fr 1fr 1fr',
+            gap: 28,
+            paddingBottom: 8,
+            borderBottom: `2px solid ${ink}`,
+            marginBottom: 2,
+            fontFamily: 'var(--osd-font-body)',
+            fontSize: 13,
+            letterSpacing: '0.18em',
+            color: muted,
+            fontWeight: 700,
+            maxWidth: 1640,
+          }}
+        >
+          <div>維度</div>
+          <div>權重</div>
+          <div style={{ textAlign: 'center' }}>G6 5.x</div>
+          <div style={{ textAlign: 'center' }}>Cytoscape</div>
+          <div style={{ textAlign: 'center', color: accent }}>PixiJS v8 ★</div>
+        </div>
+
+        <div style={{ maxWidth: 1640 }}>
+          <MatrixRow axis="架構與渲染靈活度" weight="高" g6={3} cyto={3} pixi={5} />
+          <MatrixRow axis="效能與規模 (10k 節點)" weight="高" g6={3} cyto={2} pixi={5} />
+          <MatrixRow axis="客製節點外觀 (SCADA)" weight="最高" g6={3} cyto={1} pixi={5} />
+          <MatrixRow axis="編輯能力 (內建)" weight="中" g6={5} cyto={4} pixi={1} />
+          <MatrixRow axis="Layout 演算法" weight="中" g6={5} cyto={4} pixi={4} />
+          <MatrixRow axis="圖論演算法" weight="低" g6={4} cyto={5} pixi={4} />
+          <MatrixRow axis="Bundle size" weight="中" g6={3} cyto={4} pixi={4} />
+          <MatrixRow axis="TypeScript 體驗" weight="中" g6={3} cyto={3} pixi={5} />
+          <MatrixRow axis="Angular 整合" weight="低" g6={4} cyto={3} pixi={3} />
+          <MatrixRow axis="地圖整合" weight="高" g6={1} cyto={1} pixi={5} />
+          <MatrixRow axis="文件與社群" weight="中" g6={4} cyto={4} pixi={5} />
+          <MatrixRow axis="License" g6={5} cyto={5} pixi={5} />
+          <MatrixRow axis="長期維護持續性" weight="高" g6={3} cyto={3} pixi={5} />
+
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: '300px 90px 1fr 1fr 1fr',
+              gap: 28,
+              padding: '14px 0 0',
+              borderTop: `2px solid ${ink}`,
+              marginTop: 6,
+              alignItems: 'baseline',
+            }}
+          >
+            <div
+              style={{
+                fontFamily: 'var(--osd-font-display)',
+                fontSize: 22,
+                fontWeight: 700,
+                color: ink,
+              }}
+            >
+              加權總分
+            </div>
+            <div
+              style={{
+                fontFamily: 'var(--osd-font-body)',
+                fontSize: 12,
+                letterSpacing: '0.18em',
+                color: muted,
+                fontWeight: 700,
+              }}
+            >
+              / 65
+            </div>
+            <div
+              style={{
+                fontFamily: 'var(--osd-font-display)',
+                fontSize: 44,
+                fontWeight: 700,
+                color: ink,
+                textAlign: 'center',
+                lineHeight: 1,
+                letterSpacing: '-0.02em',
+              }}
+            >
+              45
+            </div>
+            <div
+              style={{
+                fontFamily: 'var(--osd-font-display)',
+                fontSize: 44,
+                fontWeight: 700,
+                color: ink,
+                textAlign: 'center',
+                lineHeight: 1,
+                letterSpacing: '-0.02em',
+              }}
+            >
+              42
+            </div>
+            <div
+              style={{
+                fontFamily: 'var(--osd-font-display)',
+                fontSize: 56,
+                fontWeight: 700,
+                color: accent,
+                textAlign: 'center',
+                lineHeight: 1,
+                letterSpacing: '-0.02em',
+              }}
+            >
+              62
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <Footer n={9} />
+    </div>
+  );
+};
+
+// ─── Page 10 · Scoring totals ───────────────────────────────────────────────
 
 const ScoreBlock = ({
   name,
@@ -1151,10 +1387,10 @@ const Scoring: Page = () => {
         padding: '160px 140px 140px',
       }}
     >
-      <TopRule chapter={2} chapterName="選型" label="加權評分" />
+      <TopRule chapter={2} chapterName="選型" label="加權總分" />
 
       <div style={anim}>
-        <Eyebrow>加權評分 · 13 維度 × 五分制</Eyebrow>
+        <Eyebrow>加權總分 · 結論</Eyebrow>
 
         <h2
           style={{
@@ -1215,12 +1451,12 @@ const Scoring: Page = () => {
         </div>
       </div>
 
-      <Footer n={9} />
+      <Footer n={10} />
     </div>
   );
 };
 
-// ─── Page 10 · Ch.III divider · 範圍 ────────────────────────────────────────
+// ─── Page 11 · Ch.III divider · 範圍 ────────────────────────────────────────
 
 const DividerIII: Page = () => (
   <SectionDivider
@@ -1228,7 +1464,7 @@ const DividerIII: Page = () => (
     name="範圍"
     lede="GA 出貨什麼、什麼延後、什麼直接砍。三個下游 grep 盤點完才下手。"
     pages={['GA 出貨範圍', '下游使用盤點', '延後與砍除']}
-    n={10}
+    n={11}
   />
 );
 
@@ -1314,18 +1550,18 @@ const Scope: Page = () => {
         </h2>
 
         <p style={{ fontSize: 22, color: muted, marginTop: 8, marginBottom: 56, maxWidth: 1300, lineHeight: 1.55 }}>
-          已對 mxview、act-web、network、topology-web 做完 grep 盤點。砍掉兩個沒人用的 behavior,七個 plugin 延後到 v4.x。
+          已對 mxview、act-web、network、topology-web 做完 grep 盤點。三個 behavior 與八個 plugin 延後到 v4.x,Route B3 預砍 element-toolbar + focus-element 為 9 個月 timeline 留 buffer。
         </p>
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 56, maxWidth: 1640 }}>
           <StatTile big="9" label="元件 / Components" sub="node、edge、group 系列 — mxview 大量使用" />
-          <StatTile big="11" label="互動行為 / Behaviors" sub="砍 select-all 與 drill-down,附 polyfill" />
-          <StatTile big="3" label="Plugin" sub="fixed-toolbar、graph-background、element-toolbar" />
+          <StatTile big="10" label="互動行為 / Behaviors" sub="砍 select-all / drill-down / focus-element,附 polyfill" />
+          <StatTile big="2" label="Plugin" sub="fixed-toolbar、graph-background (element-toolbar 推 v4.x)" />
           <StatTile big="4" label="佈局 / Layouts" sub="force、grid、ring、align — tree 延後" />
         </div>
       </div>
 
-      <Footer n={11} />
+      <Footer n={12} />
     </div>
   );
 };
@@ -1462,7 +1698,7 @@ const ConsumerAudit: Page = () => {
         </div>
       </div>
 
-      <Footer n={12} />
+      <Footer n={13} />
     </div>
   );
 };
@@ -1581,14 +1817,14 @@ const Deferred: Page = () => {
         </h2>
 
         <p style={{ fontSize: 20, color: muted, marginTop: 6, marginBottom: 32, maxWidth: 1500, lineHeight: 1.55 }}>
-          下游 grep 沒掃到 instantiate 的模組一律延後。兩個 behavior 直接砍 — 附 polyfill,下游可自行 1-3 行替代。
+          下游 grep 沒掃到 instantiate 的模組一律延後。Route B3 再預砍 2 個 (element-toolbar / focus-element),全部 4 個推 v4.x 的項目都附 polyfill — 下游 1-3 行替代。
         </p>
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 28, maxWidth: 1640 }}>
           <ListBlock
-            title="延後到 v4.x"
+            title="延後到 v4.x (grep 沒掃到)"
             tone={signal.amber}
-            toneLabel="DEFERRED · 7+1"
+            toneLabel="DEFERRED · 8"
             items={[
               { name: 'minimap', reason: 'SCADA 標配,v4.x 補回優先' },
               { name: 'tooltip / rich-tooltip', reason: '同上,v4.x 補回優先' },
@@ -1599,24 +1835,32 @@ const Deferred: Page = () => {
             ]}
           />
           <ListBlock
-            title="直接砍除"
+            title="Polyfill 替代 (Route B3 + 砍除)"
             tone={signal.red}
-            toneLabel="DROPPED · 2"
+            toneLabel="POLYFILL · 4"
             items={[
               {
+                name: 'element-toolbar',
+                reason: 'Route B3 預砍 · 用 fixed-toolbar + 自訂 onClick handler + position style 替代',
+              },
+              {
+                name: 'focus-element',
+                reason: 'Route B3 預砍 · 用 graph.focusItem(id) Core API 直接呼叫 (功能保留)',
+              },
+              {
                 name: 'select-all',
-                reason: '僅 topology-web (內部 demo) 使用 · 下游可用 setElementState 迴圈 polyfill',
+                reason: '僅 topology-web (內部 demo) 使用 · setElementState 迴圈 polyfill',
               },
               {
                 name: 'drill-down',
-                reason: '僅 mxview programmatic 使用 · 改用 collapse-expand + setData,§11 附 snippet',
+                reason: '僅 mxview programmatic 使用 · collapse-expand + setData,§11 附 snippet',
               },
             ]}
           />
         </div>
       </div>
 
-      <Footer n={13} />
+      <Footer n={14} />
     </div>
   );
 };
@@ -1629,7 +1873,7 @@ const DividerIV: Page = () => (
     name="策略"
     lede="平行套件而非長分支。v3 留著當對照、GA 當天一次改名;下游動 package.json 一行,import path 不動。"
     pages={['平行套件策略', '架構分層']}
-    n={14}
+    n={15}
   />
 );
 
@@ -1759,7 +2003,7 @@ const Strategy: Page = () => {
             tone="new"
             status="v4 · 進行中"
             name="libs/graph-next"
-            detail="未來 26 週都在這裡。alpha → beta → rc → GA,每週 canary。"
+            detail="未來 39 週都在這裡。alpha → beta → rc → GA,每週 canary。"
           />
           <PkgBlock
             tone="sunset"
@@ -1770,7 +2014,7 @@ const Strategy: Page = () => {
         </div>
       </div>
 
-      <Footer n={15} />
+      <Footer n={16} />
     </div>
   );
 };
@@ -1896,7 +2140,7 @@ const Architecture: Page = () => {
         </h2>
 
         <p style={{ fontSize: 18, color: muted, marginTop: 6, marginBottom: 20, maxWidth: 1500, lineHeight: 1.5 }}>
-          Foundation 若 Week 4 完成度未達 70%,R1 觸發。後續所有 Tier 都依賴它,不可挪後。
+          Foundation 若 W6 完成度 &lt; 70%,R1 觸發 → +0.3 RD 或 B2 路線 (14.5 個月)。後續所有 Tier 都依賴它,不可挪後。
         </p>
 
         <div style={{ maxWidth: 1640 }}>
@@ -1909,32 +2153,32 @@ const Architecture: Page = () => {
           />
           <Tier
             tag="Tier 1"
-            weeks="Week 3 — 7"
+            weeks="Week 4 — 9"
             name="Core + Shared"
             detail="Graph facade、DataManager、ConfigManager、Renderer、Theme、20 個 model 型別搬遷"
           />
           <Tier
             tag="Tier 2"
-            weeks="Week 7 — 16"
+            weeks="Week 10 — 21"
             name="Components · Behaviors · Layouts"
-            detail="9 個元件、11 個 behavior、4 個 layout 並行開發"
+            detail="9 個元件、10 個 behavior、4 個 layout 並行開發 (2A / 2B / 2C 三條線同步)"
           />
           <Tier
             tag="Tier 3"
-            weeks="Week 14 — 18"
+            weeks="Week 22 — 29"
             name="Plugins"
-            detail="fixed-toolbar、graph-background、element-toolbar(DOM + Pixi 座標同步)"
+            detail="fixed-toolbar、graph-background (element-toolbar 已 Route B3 預砍至 v4.x)"
           />
           <Tier
             tag="Tier 4"
-            weeks="Week 18 — 26"
+            weeks="Week 30 — 39"
             name="Integration · Test · Docs"
-            detail="mxview swap PoC、Visual regression baseline、Migration guide、API docs"
+            detail="mxview / act-web swap PoC、Visual regression baseline、Migration guide、API docs、rc.final dry-run"
           />
         </div>
       </div>
 
-      <Footer n={16} />
+      <Footer n={17} />
     </div>
   );
 };
@@ -1945,9 +2189,9 @@ const DividerV: Page = () => (
   <SectionDivider
     chapter={5}
     name="時程"
-    lede="二十六週、四個 Milestone、十三場 Demo Review。每場 demo 都是觸發條件的即時檢查。"
+    lede="三十九週、四個 Milestone、二十場 Demo Review。每場 demo 都是觸發條件的即時檢查。"
     pages={['M1 → M4', 'Demo Review · D1 → D13', 'RD 分工']}
-    n={17}
+    n={18}
   />
 );
 
@@ -2023,32 +2267,36 @@ const Timeline: Page = () => {
         padding: '160px 140px 140px',
       }}
     >
-      <TopRule chapter={5} chapterName="時程" label="M1 → M4" />
+      <TopRule chapter={5} chapterName="時程" label="M1 → M4 · 39 週" />
 
       <div style={anim}>
-        <Eyebrow>時程 · M1 → M4</Eyebrow>
+        <Eyebrow>時程 · 2026/6 kickoff · 2027/3 GA</Eyebrow>
 
         <h2
           style={{
             fontFamily: 'var(--osd-font-display)',
-            fontSize: 76,
+            fontSize: 68,
             fontWeight: 700,
             lineHeight: 1.18,
             letterSpacing: '0.01em',
-            margin: '32px 0 32px 0',
+            margin: '24px 0 20px 0',
             maxWidth: 1500,
           }}
         >
-          二十六週。四個 Milestone。{' '}
-          <span style={{ color: muted, fontWeight: 400 }}>十三場 Demo Review。</span>
+          三十九週,四個 Milestone。{' '}
+          <span style={{ color: muted, fontWeight: 400 }}>二十場 Demo Review。</span>
         </h2>
+
+        <p style={{ fontSize: 18, color: muted, marginTop: 6, marginBottom: 20, maxWidth: 1500, lineHeight: 1.5 }}>
+          Route B3 baseline (2 人 × 60% × 39 週)。kickoff 2026/6/1,GA 落點 2027/3 初。
+        </p>
 
         <div
           style={{
             position: 'relative',
-            height: 36,
-            marginTop: 40,
-            marginBottom: 24,
+            height: 40,
+            marginTop: 24,
+            marginBottom: 20,
             maxWidth: 1640,
           }}
         >
@@ -2062,42 +2310,63 @@ const Timeline: Page = () => {
               background: hairline,
             }}
           />
-          <div
-            style={{
-              position: 'absolute',
-              left: 0,
-              top: 18,
-              width: '100%',
-              height: 2,
-              background: `linear-gradient(90deg, ${accent} 0%, ${accent} 23%, ${hairline} 23%)`,
-            }}
-          />
-          <div
-            style={{
-              position: 'absolute',
-              top: 0,
-              left: '23%',
-              transform: 'translateX(-50%)',
-              fontFamily: 'var(--osd-font-body)',
-              fontSize: 14,
-              color: accent,
-              letterSpacing: '0.16em',
-              fontWeight: 600,
-            }}
-          >
-            ▼ 此刻 · W6
-          </div>
+          {[
+            { p: 0, label: '2026/6 · kickoff' },
+            { p: 23, label: '2026/8 · M1' },
+            { p: 54, label: '2026/10 · M2' },
+            { p: 74, label: '2026/12 · M3' },
+            { p: 100, label: '2027/3 · GA' },
+          ].map(({ p, label }, i) => (
+            <div
+              key={i}
+              style={{
+                position: 'absolute',
+                top: 14,
+                left: `${p}%`,
+                transform: 'translateX(-50%)',
+                width: 10,
+                height: 10,
+                borderRadius: 5,
+                background: i === 0 || i === 4 ? accent : ink,
+              }}
+            />
+          ))}
+          {[
+            { p: 0, label: '2026/6 · kickoff' },
+            { p: 23, label: '2026/8' },
+            { p: 54, label: '2026/10' },
+            { p: 74, label: '2026/12' },
+            { p: 100, label: '2027/3 · GA' },
+          ].map(({ p, label }, i) => (
+            <div
+              key={i}
+              style={{
+                position: 'absolute',
+                top: 30,
+                left: `${p}%`,
+                transform: i === 0 ? 'translateX(0)' : i === 4 ? 'translateX(-100%)' : 'translateX(-50%)',
+                fontFamily: 'var(--osd-font-body)',
+                fontSize: 12,
+                color: i === 0 || i === 4 ? accent : muted,
+                letterSpacing: '0.10em',
+                fontWeight: 700,
+                whiteSpace: 'nowrap',
+              }}
+            >
+              {label}
+            </div>
+          ))}
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 56, maxWidth: 1640 }}>
-          <Milestone tag="M1" weeks="第 1 — 6 週" title="基礎建設與核心" ship="ship · 4.0.0-alpha.1" />
-          <Milestone tag="M2" weeks="第 7 — 13 週" title="元件、行為、佈局" ship="ship · 4.0.0-beta.1" />
-          <Milestone tag="M3" weeks="第 14 — 18 週" title="Plugin、mxview PoC" ship="ship · 4.0.0-rc.1" />
-          <Milestone tag="M4" weeks="第 19 — 26 週" title="整合、文件、GA" ship="ship · 4.0.0" />
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 40, maxWidth: 1640, marginTop: 36 }}>
+          <Milestone tag="M1" weeks="W1–9 · 2026/6 → 8" title="Foundation + Core" ship="ship · 4.0.0-alpha.1" />
+          <Milestone tag="M2" weeks="W10–21 · 2026/8 → 10" title="Components · Behaviors · Layouts" ship="ship · 4.0.0-beta.1" />
+          <Milestone tag="M3" weeks="W22–29 · 2026/11 → 12" title="Plugins · subpath exports" ship="ship · 4.0.0-rc.1" />
+          <Milestone tag="M4" weeks="W30–39 · 2027/1 → 3" title="Integration · 文件 · GA" ship="ship · 4.0.0 GA" />
         </div>
       </div>
 
-      <Footer n={18} />
+      <Footer n={19} />
     </div>
   );
 };
@@ -2188,7 +2457,7 @@ const DemoCadence: Page = () => {
       <TopRule chapter={5} chapterName="時程" label="Demo Review" />
 
       <div style={anim}>
-        <Eyebrow>雙週 demo review · D1 → D13</Eyebrow>
+        <Eyebrow>雙週 demo review · D1 → D20 · 39 週</Eyebrow>
 
         <h2
           style={{
@@ -2200,42 +2469,40 @@ const DemoCadence: Page = () => {
             margin: '24px 0 8px 0',
             maxWidth: 1500,
           }}
-        >
-          每兩週一次,共十三場。
-        </h2>
+        >每兩週一次,共二十場。</h2>
 
         <p style={{ fontSize: 18, color: muted, marginTop: 6, marginBottom: 24, maxWidth: 1500, lineHeight: 1.5 }}>
-          每場 demo 對 R1–R4 做 sanity check。觸發即進入應變,不延後。
+          每場 demo 對 R1–R4 做 sanity check。觸發即進入應變,不延後。M1 / M3 各 4 場,M2 / M4 各 6 場。
         </p>
 
         <div style={{ maxWidth: 1640 }}>
           <DemoGroup
             ms="M1"
-            weeks="D1 · D2 · D3"
-            demos={['Pixi v8 boot', 'hit-test + scene graph', '4.0.0-alpha.1']}
-            trigger="D2 / W4 · R1 check point"
+            weeks="D1–D4 · W2 / 4 / 6 / 8"
+            demos={['Pixi boot + viewport', 'hit-test + Graph facade', 'DataManager + Renderer', 'Theme + sprite loader']}
+            trigger="D3 / W6 · R1 check point"
           />
           <DemoGroup
             ms="M2"
-            weeks="D4 · D5 · D6"
-            demos={['node-device + edge-line', '4 navigation behaviors', '元件 9 + behavior 6']}
+            weeks="D5–D10 · W10–20"
+            demos={['4.0.0-alpha.1 (D5)', 'node-device + nav 4 (D6)', '6/9 components + selection (D7)', '9 components + 4 layouts (D8)', 'brush / click select (D9)', 'hover + fix-element-size (D10)']}
           />
           <DemoGroup
             ms="M3"
-            weeks="D7 · D8 · D9"
-            demos={['4.0.0-beta.1', 'element-toolbar + collapse-expand', '4.0.0-rc.1']}
-            trigger="D8 / W16 · R4 check point (mxview PoC)"
+            weeks="D11–D14 · W22–28"
+            demos={['4.0.0-beta.1 + create-edge (D11)', 'collapse-expand + subpath (D12)', '2 plugins (D13)', 'feature complete (D14)']}
+            trigger="D11 / W22 · R4 check point (mxview PoC kickoff)"
           />
           <DemoGroup
             ms="M4"
-            weeks="D10 · D11 · D12 · D13"
-            demos={['visual baseline lock', 'mxview swap PoC', 'docs', 'GA dry-run']}
-            trigger="D13 · GA Day Eve"
+            weeks="D15–D20 · W30–39"
+            demos={['4.0.0-rc.1 + baseline lock (D15)', 'mxview swap PoC (D16)', 'act-web swap (D17)', 'API docs / storybook (D18)', 'rc.final dry-run (D19)', 'GA Day (D20)']}
+            trigger="D20 / W39 · GA Day"
           />
         </div>
       </div>
 
-      <Footer n={19} />
+      <Footer n={20} />
     </div>
   );
 };
@@ -2350,7 +2617,7 @@ const WBS: Page = () => {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 28, maxWidth: 1640 }}>
           <OwnerCol
             role="LEAD RD · D1"
-            who="主筆 · 對外介面"
+            who="主 · 對外介面"
             blocks={[
               { phase: 'M1', work: '與 D2 共建 Foundation (pair)' },
               { phase: 'M1–M2', work: 'Graph facade、Renderer、DataManager、Theme' },
@@ -2399,7 +2666,7 @@ const WBS: Page = () => {
         </div>
       </div>
 
-      <Footer n={20} />
+      <Footer n={21} />
     </div>
   );
 };
@@ -2409,10 +2676,10 @@ const WBS: Page = () => {
 const DividerVI: Page = () => (
   <SectionDivider
     chapter={6}
-    name="風險與請求"
-    lede="觸發條件、砍除清單、敏感度分析、簽核請求。proposal 最重要的部分 — 失敗時的對應已經寫死。"
-    pages={['R1 → R4 機制', '砍除清單與補回', '敏感度', '請求']}
-    n={21}
+    name="風險"
+    lede="觸發條件、砍除三輪、敏感度與 B2 備用路線、簽核請求。proposal 最重要的部分 — 失敗時的對應已經寫死,落後時自動進下一個應變層級。"
+    pages={['R1 → R4 機制', '砍除三輪 + 補回', '敏感度 · B2 備用', '請求']}
+    n={22}
   />
 );
 
@@ -2493,54 +2760,54 @@ const Risk: Page = () => {
         <h2
           style={{
             fontFamily: 'var(--osd-font-display)',
-            fontSize: 60,
+            fontSize: 56,
             fontWeight: 700,
             lineHeight: 1.18,
             letterSpacing: '0.01em',
-            margin: '24px 0 8px 0',
+            margin: '20px 0 8px 0',
             maxWidth: 1500,
           }}
         >
-          落後時,按規則砍除範圍。
+          落後時,按規則進入 Round 2 或 B2 路線。
         </h2>
 
-        <p style={{ fontSize: 19, color: muted, marginTop: 6, marginBottom: 28, maxWidth: 1500, lineHeight: 1.5 }}>
-          四個觸發條件,四個事先講好的應變動作。R1–R4 若 M2 前都沒觸發,GA 就會準時。
+        <p style={{ fontSize: 18, color: muted, marginTop: 6, marginBottom: 22, maxWidth: 1500, lineHeight: 1.5 }}>
+          Route B3 baseline 已預砍 Round 1 (element-toolbar + focus-element)。R1–R4 觸發後,有明確下一步 — Round 2 砍除、加 0.3 RD、或進入 B2 (14.5 個月) 路線。
         </p>
 
         <div style={{ maxWidth: 1640 }}>
           <Trigger
             code="R1"
             tone={signal.amber}
-            title="M1 基礎建設延遲"
-            trigger="第 4 週完成度 < 70%。"
-            response="拉第三位 RD (0.3 pw),或時程延長 1.5 個月。"
+            title="M1 Foundation 延遲"
+            trigger="第 6 週 Foundation 完成度 < 70%。"
+            response="拉第 3 位 RD (library 小組 0.3 PW),或 timeline 順延至 B2 路線 (14.5 個月)。"
           />
           <Trigger
             code="R2"
             tone={signal.amber}
-            title="投入低於承諾"
-            trigger="任一 RD 連續兩週低於 60%。"
-            response="啟動 §7 砍除清單第一輪 (element-toolbar、focus-element)。"
+            title="60% allocation 前提破滅"
+            trigger="任一 RD 連續 2 週實際投入 < 50%。"
+            response="觸發 §7 Round 2 砍除 (create-edge / collapse-expand / edge 合併);若連續 4 週 < 45%,啟動 R1 應變或進入 B2。"
           />
           <Trigger
             code="R3"
             tone={signal.amber}
             title="v3 維護量超標"
-            trigger="v3 處理量單週 > 1.5 天,或連續兩週 > 1 天。"
-            response="當週暫停 v3 P1;持續則啟動砍除清單。"
+            trigger="v3 單週處理 > 1.5 天,或連續 2 週 > 1 天。"
+            response="該週起暫停 v3 P1、僅接 P0;超 2 週啟動 §7 Round 2 砍除。"
           />
           <Trigger
             code="R4"
             tone={signal.red}
-            title="mxview 整合 PoC 失敗"
-            trigger="M3 第 16 週後,缺失 API 估超過 2 person-weeks。"
-            response="與 mxview team 聯合決策:補實作或啟動砍除清單。"
+            title="mxview / act-web 整合 PoC 失敗"
+            trigger="M3 W26 後 PoC 跑不起,且 missing API 預估 > 2 PW。"
+            response="與 mxview / act-web team + 主管聯合決策:補實作 vs §7 砍除。"
           />
         </div>
       </div>
 
-      <Footer n={22} />
+      <Footer n={23} />
     </div>
   );
 };
@@ -2634,54 +2901,65 @@ const Cutlist: Page = () => {
       <TopRule chapter={6} chapterName="風險與請求" label="砍除與補回" />
 
       <div style={anim}>
-        <Eyebrow>砍除清單 · 補回順序</Eyebrow>
+        <Eyebrow>砍除清單 · 三輪 + 補回順序</Eyebrow>
 
         <h2
           style={{
             fontFamily: 'var(--osd-font-display)',
-            fontSize: 56,
+            fontSize: 52,
             fontWeight: 700,
             lineHeight: 1.18,
             letterSpacing: '0.01em',
-            margin: '24px 0 8px 0',
+            margin: '20px 0 8px 0',
             maxWidth: 1500,
           }}
         >
-          失敗時砍什麼、成功時補什麼。
+          Round 1 已在 baseline 預砍 · 觸發後依序進 Round 2 / 3。
         </h2>
 
-        <p style={{ fontSize: 18, color: muted, marginTop: 6, marginBottom: 24, maxWidth: 1500, lineHeight: 1.5 }}>
-          R2/R3 觸發 → Round 1;進一步惡化 → Round 2、Round 3。M1/M2/M3 末提前 ≥ 1 週 → 拉回。
+        <p style={{ fontSize: 17, color: muted, marginTop: 6, marginBottom: 22, maxWidth: 1500, lineHeight: 1.5 }}>
+          Route B3 baseline 已含 Round 1 (element-toolbar + focus-element)。R2/R3 觸發 → Round 2;持續惡化 → Round 3 (minimal viewer)。M1/M2/M3 末提前 ≥ 1 週 → 拉回。
         </p>
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 22, maxWidth: 1640 }}>
           <RoundBlock
-            round="Round 1"
-            saves="3 pw"
-            tone={signal.amber}
-            toneLabel="FIRST CUT"
-            items={['element-toolbar', 'focus-element (需主管 sign-off)']}
+            round="Round 1 ✓ baseline"
+            saves="2 PW (已含)"
+            tone={signal.green}
+            toneLabel="PRE-CUT · B3 內含"
+            items={[
+              'element-toolbar → v4.x (用 fixed-toolbar polyfill)',
+              'focus-element → v4.x (用 graph.focusItem API)',
+            ]}
           />
           <RoundBlock
             round="Round 2"
-            saves="2 pw"
+            saves="2–3 PW"
             tone={signal.amber}
-            toneLabel="DEEPER"
-            items={['create-edge', 'collapse-expand', 'edge-polyline / arrow / label 併入']}
+            toneLabel="R2/R3 觸發後"
+            items={[
+              'edge-polyline / arrow / label 合入 edge-line 內部',
+              'create-edge → v4.x (DESIGN mode 暫停)',
+              'collapse-expand → v4.x (mxview 已 false)',
+            ]}
           />
           <RoundBlock
             round="Round 3"
             saves="warning"
             tone={signal.red}
-            toneLabel="MINIMAL"
-            items={['hover-activate', 'scroll-canvas (改用 zoom-canvas)']}
+            toneLabel="MINIMAL VIEWER"
+            items={[
+              'drag-element → v4.x (編輯場景棄用)',
+              'hover-activate',
+              'scroll-canvas (改用 zoom-canvas 變通)',
+            ]}
           />
         </div>
 
         <div
           style={{
-            marginTop: 28,
-            paddingTop: 22,
+            marginTop: 22,
+            paddingTop: 18,
             borderTop: `2px solid ${ink}`,
             maxWidth: 1640,
           }}
@@ -2689,25 +2967,25 @@ const Cutlist: Page = () => {
           <div
             style={{
               fontFamily: 'var(--osd-font-body)',
-              fontSize: 14,
+              fontSize: 13,
               letterSpacing: '0.18em',
               color: accent,
               fontWeight: 700,
-              marginBottom: 10,
+              marginBottom: 8,
             }}
           >
             PULL-BACK · 提前完成時補回順序
           </div>
-          <div style={{ fontFamily: 'var(--osd-font-body)', fontSize: 17, color: ink, lineHeight: 1.6 }}>
-            +1 週 → <span style={{ fontWeight: 600 }}>drill-down</span>{' '}
-            · +2 週 → <span style={{ fontWeight: 600 }}>select-all</span>{' '}
-            · +3 週 → <span style={{ fontWeight: 600 }}>minimap plugin</span>{' '}
-            · +4 週 → <span style={{ fontWeight: 600 }}>tooltip plugin</span>
+          <div style={{ fontFamily: 'var(--osd-font-body)', fontSize: 16, color: ink, lineHeight: 1.55 }}>
+            +1 週 → <span style={{ fontWeight: 600 }}>drill-down</span>
+            {' · '}+2 週 → <span style={{ fontWeight: 600 }}>select-all</span>
+            {' · '}+3 週 → <span style={{ fontWeight: 600 }}>minimap plugin</span>
+            {' · '}+4 週 → <span style={{ fontWeight: 600 }}>tooltip plugin</span>
           </div>
         </div>
       </div>
 
-      <Footer n={23} />
+      <Footer n={24} />
     </div>
   );
 };
@@ -2782,81 +3060,125 @@ const Sensitivity: Page = () => {
         padding: '160px 140px 140px',
       }}
     >
-      <TopRule chapter={6} chapterName="風險與請求" label="敏感度" />
+      <TopRule chapter={6} chapterName="風險與請求" label="敏感度 · 備用路線" />
 
       <div style={anim}>
-        <Eyebrow>敏感度 · 投入 vs 範圍</Eyebrow>
+        <Eyebrow>敏感度 · 60% allocation × 39 週 baseline</Eyebrow>
 
         <h2
           style={{
             fontFamily: 'var(--osd-font-display)',
-            fontSize: 72,
+            fontSize: 56,
             fontWeight: 700,
             lineHeight: 1.18,
             letterSpacing: '0.01em',
-            margin: '32px 0 32px 0',
+            margin: '20px 0 12px 0',
             maxWidth: 1500,
           }}
         >
-          80% 這個數字不是隨便取的。
+          60% 是硬前提。跌破就走 Round 2 / B2 路線。
         </h2>
+
+        <p style={{ fontSize: 17, color: muted, marginTop: 6, marginBottom: 22, maxWidth: 1500, lineHeight: 1.5 }}>
+          需求 36 PW (Route B3 預砍後,AI 1.2x 加速)。供給 = 2 人 × allocation × 39 週 − v3 維護 1 天/週。
+        </p>
 
         <div
           style={{
             display: 'grid',
-            gridTemplateColumns: '180px 220px 1fr',
-            gap: 40,
-            paddingBottom: 12,
+            gridTemplateColumns: '140px 180px 1fr',
+            gap: 36,
+            paddingBottom: 10,
             borderBottom: `2px solid ${ink}`,
-            marginBottom: 4,
+            marginBottom: 2,
             fontFamily: 'var(--osd-font-body)',
-            fontSize: 14,
+            fontSize: 13,
             letterSpacing: '0.18em',
             color: muted,
             fontWeight: 600,
+            maxWidth: 1640,
           }}
         >
           <div>投入比例</div>
-          <div>有效 PW</div>
-          <div>結果 (對應 38 pw 需求)</div>
+          <div>有效 PW (供給)</div>
+          <div>vs 36 PW 需求 · 對應路線</div>
         </div>
 
         <div style={{ maxWidth: 1640 }}>
           <SensitivityRow
-            alloc="90%"
-            effective="36.4 pw"
-            outcome="幾乎打平。可挑戰延伸目標。"
+            alloc="70%"
+            effective="39.0 PW"
+            outcome="+3.0 buffer · 可拉回 §7.3 (drill-down / select-all)。"
             tone={signal.green}
           />
           <SensitivityRow
-            alloc="80%"
-            effective="31.2 pw"
-            outcome="計畫基準。觸發器待命但不發動。"
+            alloc="65%"
+            effective="35.1 PW"
+            outcome="−0.9 marginal · GA 如期,Round 2 待命不發。"
+            tone={signal.green}
+          />
+          <SensitivityRow
+            alloc="60%"
+            effective="31.2 PW"
+            outcome="−4.8 baseline · 倚賴 AI 1.3x 或 Round 2 sub-cut 補。"
             tone={signal.green}
             highlight
           />
           <SensitivityRow
-            alloc="70%"
-            effective="26.0 pw"
-            outcome="砍除清單第一輪自動啟動。"
+            alloc="55%"
+            effective="27.3 PW"
+            outcome="−8.7 · 必觸發 R2,啟動 Round 2 砍除。"
             tone={signal.amber}
           />
           <SensitivityRow
-            alloc="60%"
-            effective="20.8 pw"
-            outcome="6 個月無法達成。需重新 scoping 或加人。"
-            tone={signal.red}
-          />
-          <SensitivityRow
             alloc="50%"
-            effective="15.6 pw"
-            outcome="僅能交付約 40% 的 GA 範圍。專案需重新 baseline。"
+            effective="23.4 PW"
+            outcome="−12.6 · 進入 B2 路線 (14.5 個月) 或重新 scoping。"
             tone={signal.red}
           />
         </div>
+
+        <div
+          style={{
+            marginTop: 18,
+            display: 'grid',
+            gridTemplateColumns: '1fr 1fr',
+            gap: 22,
+            maxWidth: 1640,
+          }}
+        >
+          <div
+            style={{
+              background: wash,
+              border: `1px solid ${hairline}`,
+              padding: '14px 18px',
+            }}
+          >
+            <div style={{ fontFamily: 'var(--osd-font-body)', fontSize: 12, letterSpacing: '0.18em', color: signal.green, fontWeight: 700 }}>
+              ★ B3 BASELINE
+            </div>
+            <div style={{ fontFamily: 'var(--osd-font-display)', fontSize: 19, color: ink, marginTop: 6, fontWeight: 700 }}>
+              2 × 60% × 39 週 · scope = full minus Round 1
+            </div>
+          </div>
+          <div
+            style={{
+              background: wash,
+              border: `1px solid ${hairline}`,
+              padding: '14px 18px',
+            }}
+          >
+            <div style={{ fontFamily: 'var(--osd-font-body)', fontSize: 12, letterSpacing: '0.18em', color: signal.amber, fontWeight: 700 }}>
+              B2 FALLBACK
+            </div>
+            <div style={{ fontFamily: 'var(--osd-font-display)', fontSize: 19, color: ink, marginTop: 6, fontWeight: 700 }}>
+              2 × 50% × 63 週 (14.5 個月) · scope = full
+            </div>
+          </div>
+        </div>
       </div>
 
-      <Footer n={24} />
+      <Footer n={25} />
     </div>
   );
 };
@@ -2947,8 +3269,8 @@ const Closing: Page = () => {
         <div style={{ maxWidth: 1500 }}>
           <Ask
             n="a."
-            title="確認兩位 RD、80% 投入、26 週。"
-            detail="低於 80%,砍除清單依公開規則自動觸發。沒有英雄式硬撐。"
+            title="確認兩位 RD、60% 投入、39 週 (Route B3)。"
+            detail="跌破 60% 將觸發 R2、自動進 Round 2 砍除;持續惡化則進 B2 路線 (14.5 個月)。沒有英雄式硬撐。"
           />
           <Ask
             n="b."
@@ -2958,7 +3280,7 @@ const Closing: Page = () => {
           <Ask
             n="c."
             title="出席雙週 demo review。"
-            detail="26 週內共 13 場。每一場都是觸發條件的即時檢查 — 落後就在這裡被抓到。"
+            detail="39 週內共 20 場 (D1–D20)。每一場都是觸發條件的即時檢查 — 落後就在這裡被抓到。"
           />
         </div>
 
@@ -2978,12 +3300,12 @@ const Closing: Page = () => {
           <div
             style={{
               fontFamily: 'var(--osd-font-display)',
-              fontSize: 32,
+              fontSize: 30,
               color: ink,
               fontWeight: 700,
             }}
           >
-            需於 M0 · 第 0 週前完成決策
+            M0 kickoff · 2026/6
           </div>
           <div
             style={{
@@ -2993,12 +3315,12 @@ const Closing: Page = () => {
               letterSpacing: '0.16em',
             }}
           >
-            v4.0 GA · 第 26 週
+            v4.0 GA · 2027/3 (第 39 週)
           </div>
         </div>
       </div>
 
-      <Footer n={25} />
+      <Footer n={26} />
     </div>
   );
 };
@@ -3011,7 +3333,7 @@ const DividerVII: Page = () => (
     name="技術落地"
     lede="2026-05-21 規格文件出爐。前面六章的決策落到套件命名、版本釋出、相依 stack、Phase 模型與遷移工具五項具體承諾。"
     pages={['規格出爐', '套件 & 版本', '相依 stack', 'Phase 模型', '遷移工具']}
-    n={26}
+    n={27}
   />
 );
 
@@ -3132,7 +3454,7 @@ const SpecArrival: Page = () => {
         </div>
       </div>
 
-      <Footer n={27} />
+      <Footer n={28} />
     </div>
   );
 };
@@ -3314,7 +3636,7 @@ const PackageNaming: Page = () => {
         </div>
       </div>
 
-      <Footer n={28} />
+      <Footer n={29} />
     </div>
   );
 };
@@ -3405,9 +3727,7 @@ const DepStack: Page = () => {
             margin: '28px 0 16px 0',
             maxWidth: 1500,
           }}
-        >
-          五個 dep,一條紅線。
-        </h2>
+        >五個 dependencies</h2>
 
         <p
           style={{
@@ -3463,7 +3783,7 @@ const DepStack: Page = () => {
         </div>
       </div>
 
-      <Footer n={29} />
+      <Footer n={28} />
     </div>
   );
 };
@@ -3605,7 +3925,7 @@ const PhaseModel: Page = () => {
         </div>
       </div>
 
-      <Footer n={30} />
+      <Footer n={31} />
     </div>
   );
 };
@@ -3718,15 +4038,251 @@ const Migration: Page = () => {
             name="Migration guide v1"
             detail="每個 breaking change 含 Before(G6) / After(Pixi-next) 並排範例、complexity 標記、行為差異警示。"
           />
-          <ToolRow
-            n="iv."
-            name="Compat ESLint rule"
-            detail="給 mxview / act 在 migration 期內可選裝。標記混用兩版 import,避免不小心同時引兩個 lib。"
-          />
         </div>
       </div>
 
-      <Footer n={31} />
+      <Footer n={29} />
+    </div>
+  );
+};
+
+// ─── Page 30 · Module reference table (Appendix B) ──────────────────────────
+
+const ModuleEntry = ({
+  name,
+  status,
+  note,
+}: {
+  name: string;
+  status: 'GA' | 'v4.x' | 'B3';
+  note?: string;
+}) => {
+  const color =
+    status === 'GA' ? signal.green : status === 'B3' ? accent : signal.amber;
+  const label = status === 'GA' ? 'GA' : status === 'B3' ? 'B3 預砍' : 'v4.x';
+  return (
+    <div
+      style={{
+        display: 'grid',
+        gridTemplateColumns: '1fr 84px',
+        gap: 10,
+        padding: '5px 0',
+        borderBottom: `1px solid ${hairline}`,
+        alignItems: 'baseline',
+      }}
+    >
+      <div>
+        <span
+          style={{
+            fontFamily: '"SF Mono", Menlo, Monaco, monospace',
+            fontSize: 14,
+            color: ink,
+            fontWeight: 600,
+          }}
+        >
+          {name}
+        </span>
+        {note && (
+          <span
+            style={{
+              fontFamily: 'var(--osd-font-body)',
+              fontSize: 11,
+              color: muted,
+              marginLeft: 6,
+            }}
+          >
+            · {note}
+          </span>
+        )}
+      </div>
+      <div
+        style={{
+          fontFamily: 'var(--osd-font-body)',
+          fontSize: 10,
+          color,
+          fontWeight: 700,
+          letterSpacing: '0.14em',
+          textAlign: 'right',
+        }}
+      >
+        {label}
+      </div>
+    </div>
+  );
+};
+
+const ModuleSection = ({
+  title,
+  count,
+  children,
+}: {
+  title: string;
+  count: string;
+  children: React.ReactNode;
+}) => (
+  <div>
+    <div
+      style={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'baseline',
+        borderBottom: `2px solid ${ink}`,
+        paddingBottom: 6,
+        marginBottom: 2,
+      }}
+    >
+      <div
+        style={{
+          fontFamily: 'var(--osd-font-display)',
+          fontSize: 18,
+          fontWeight: 700,
+          color: ink,
+        }}
+      >
+        {title}
+      </div>
+      <div
+        style={{
+          fontFamily: 'var(--osd-font-body)',
+          fontSize: 11,
+          letterSpacing: '0.14em',
+          color: muted,
+          fontWeight: 700,
+        }}
+      >
+        {count}
+      </div>
+    </div>
+    {children}
+  </div>
+);
+
+const ModuleTable: Page = () => {
+  const anim = useEntrance();
+  return (
+    <div
+      style={{
+        ...fill,
+        background: 'var(--osd-bg)',
+        color: 'var(--osd-text)',
+        padding: '150px 140px 120px',
+      }}
+    >
+      <TopRule chapter={7} chapterName="技術落地" label="完整模組對照表" />
+
+      <div style={anim}>
+        <Eyebrow>附錄 · 完整模組對照表 (Appendix B)</Eyebrow>
+
+        <h2
+          style={{
+            fontFamily: 'var(--osd-font-display)',
+            fontSize: 40,
+            fontWeight: 700,
+            lineHeight: 1.18,
+            letterSpacing: '0.01em',
+            margin: '14px 0 4px 0',
+            maxWidth: 1500,
+          }}
+        >
+          39 個模組 · 三個結局 (GA / v4.x / B3 預砍)。
+        </h2>
+
+        <p style={{ fontSize: 15, color: muted, marginTop: 4, marginBottom: 18, maxWidth: 1500, lineHeight: 1.5 }}>
+          v4.0 GA = 25 · v4.x 延後 = 12 (含 B3 預砍 2 + polyfill 2) · Future = 2。
+        </p>
+
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 36, maxWidth: 1640 }}>
+          {/* Col 1: Components + Layouts */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
+            <ModuleSection title="Components" count="9 個 · 全 GA">
+              <ModuleEntry name="node-device" status="GA" note="heavy · 44 hits" />
+              <ModuleEntry name="node-icon" status="GA" />
+              <ModuleEntry name="node-label" status="GA" />
+              <ModuleEntry name="edge-line" status="GA" note="heavy · 43 hits" />
+              <ModuleEntry name="edge-polyline" status="GA" note="mxview elbow" />
+              <ModuleEntry name="edge-quadratic" status="GA" />
+              <ModuleEntry name="edge-label" status="GA" />
+              <ModuleEntry name="edge-arrow" status="GA" />
+              <ModuleEntry name="group-device" status="GA" />
+            </ModuleSection>
+
+            <ModuleSection title="Layouts" count="5 個 · 4 GA · 1 v4.x">
+              <ModuleEntry name="force" status="GA" note="FA2" />
+              <ModuleEntry name="grid" status="GA" />
+              <ModuleEntry name="ring" status="GA" />
+              <ModuleEntry name="align" status="GA" />
+              <ModuleEntry name="tree" status="v4.x" note="未掃到使用" />
+            </ModuleSection>
+          </div>
+
+          {/* Col 2: Behaviors */}
+          <div>
+            <ModuleSection title="Behaviors" count="13 個 · 10 GA · 3 v4.x">
+              <ModuleEntry name="drag-canvas" status="GA" />
+              <ModuleEntry name="drag-element" status="GA" />
+              <ModuleEntry name="zoom-canvas" status="GA" />
+              <ModuleEntry name="scroll-canvas" status="GA" />
+              <ModuleEntry name="click-select" status="GA" />
+              <ModuleEntry name="brush-select" status="GA" />
+              <ModuleEntry name="hover-activate" status="GA" />
+              <ModuleEntry name="fix-element-size" status="GA" />
+              <ModuleEntry name="create-edge" status="GA" />
+              <ModuleEntry name="collapse-expand" status="GA" />
+              <ModuleEntry name="focus-element" status="B3" note="用 graph.focusItem 替代" />
+              <ModuleEntry name="drill-down" status="v4.x" note="polyfill" />
+              <ModuleEntry name="select-all" status="v4.x" note="polyfill" />
+            </ModuleSection>
+          </div>
+
+          {/* Col 3: Plugins + Future */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
+            <ModuleSection title="Plugins" count="10 個 · 2 GA · 8 v4.x">
+              <ModuleEntry name="fixed-toolbar" status="GA" />
+              <ModuleEntry name="graph-background" status="GA" />
+              <ModuleEntry name="element-toolbar" status="B3" note="用 fixed-toolbar polyfill" />
+              <ModuleEntry name="minimap" status="v4.x" note="優先補回" />
+              <ModuleEntry name="tooltip" status="v4.x" note="優先補回" />
+              <ModuleEntry name="rich-tooltip" status="v4.x" />
+              <ModuleEntry name="context-menu" status="v4.x" />
+              <ModuleEntry name="snapline" status="v4.x" />
+              <ModuleEntry name="history" status="v4.x" />
+              <ModuleEntry name="hull" status="v4.x" />
+            </ModuleSection>
+
+            <ModuleSection title="Future (v4.x+)" count="2 個">
+              <ModuleEntry name="orth router (elkjs)" status="v4.x" />
+              <ModuleEntry name="leaflet.pixi-overlay" status="v4.x" note="v4.1+" />
+            </ModuleSection>
+          </div>
+        </div>
+
+        <div
+          style={{
+            marginTop: 16,
+            paddingTop: 12,
+            borderTop: `1px solid ${hairline}`,
+            maxWidth: 1640,
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'baseline',
+            fontFamily: 'var(--osd-font-body)',
+            fontSize: 13,
+            color: muted,
+            letterSpacing: '0.06em',
+          }}
+        >
+          <span>
+            <span style={{ color: signal.green, fontWeight: 700 }}>● GA</span> v4.0 出貨
+            {' · '}
+            <span style={{ color: signal.amber, fontWeight: 700 }}>● v4.x</span> 延後
+            {' · '}
+            <span style={{ color: accent, fontWeight: 700 }}>● B3 預砍</span> baseline 已含
+          </span>
+          <span>full audit: V4_REFACTOR_PROPOSAL.md · Appendix B</span>
+        </div>
+      </div>
+
+      <Footer n={30} />
     </div>
   );
 };
@@ -3746,12 +4302,13 @@ export default [
   DividerII,
   Candidates,
   WhyLeaveG6,
-  Comparison,
+  ScoringMatrix,
   Scoring,
   DividerIII,
   Scope,
   ConsumerAudit,
   Deferred,
+  ModuleTable,
   DividerIV,
   Strategy,
   Architecture,
@@ -3763,11 +4320,7 @@ export default [
   Risk,
   Cutlist,
   Sensitivity,
-  Closing,
   DividerVII,
-  SpecArrival,
-  PackageNaming,
   DepStack,
-  PhaseModel,
   Migration,
 ] satisfies Page[];
