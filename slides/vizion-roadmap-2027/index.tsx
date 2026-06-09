@@ -3,6 +3,29 @@ import type { CSSProperties, ReactNode } from 'react';
 import { useSlidePageNumber } from '@open-slide/core';
 import type { DesignSystem, Page, SlideMeta, SlideTransition } from '@open-slide/core';
 
+export const notes: (string | undefined)[] = [
+  `- 今天重點
+- 從今年 2026 上半年 安排到 2027 年底`,
+  `1. 分兩個版本 3.0, 4.0
+2. 每一項逐步介紹`,
+  `1. Q3, Q4
+2. Q2 Map 整合`,
+  undefined,
+  `1. 2026 -> 2027 都可以正常使用
+2. Release 後仍有半年`,
+  `1. 目前仍須多情境刻在產品端... 產品需要...
+2. 效能 2000 點體驗會掉 FPS... 
+3. 更新節奏... 社群解方少`,
+  `1. 說明效能 彈性 社群
+2. 內建功能偏少 + low level 開發成本比較高`,
+  `1. PoC 決定是否要換
+2. 換 or 不換說明`,
+  "1. 盤點以上... 先做必要的",
+  `1. 最小化使用端影響
+2. 逐步換，可以提前發佈 提前驗證`,
+];
+
+
 // ─── Panel-tweakable design tokens ───────────────────────────────────────────
 export const design: DesignSystem = {
   palette: {
@@ -354,7 +377,7 @@ const Title: Page = () => (
           </h1>
         </Reveal>
         <Reveal step={4} style={{ marginTop: 38, fontSize: 33, color: muted, maxWidth: 1100, lineHeight: 1.42 }}>
-          3.0 補強現有功能、<B>4.0 換上 Pixi 新引擎</B> —— 效能優化與 Map 整合,一張圖看懂節奏。
+          3.0 補強現有功能、<B>4.0 聚焦效能與架構整合</B> —— 渲染升級與 Map 整合,一張圖看懂節奏。
         </Reveal>
       </div>
 
@@ -1114,7 +1137,7 @@ const Lanes: Page = () => (
             <>
               <B>2027 H2 遷移至 4.0</B>
               <br />
-              <Pill variant="go">需自排遷移 + UAT 窗口</Pill>
+              <Pill variant="go">App Owner 需自排遷移 + UAT 驗證</Pill>
             </>
           }
         />
@@ -1128,7 +1151,7 @@ const Lanes: Page = () => (
             <>
               <B>2027 H2 遷移至 4.0</B>
               <br />
-              <Pill variant="go">需自排遷移 + UAT 窗口</Pill>
+              <Pill variant="go">App Owner 需自排遷移 + UAT 驗證</Pill>
             </>
           }
         />
@@ -1235,18 +1258,18 @@ const Impact: Page = () => (
       <div style={{ display: 'flex', gap: 40, marginTop: 60, flex: 1 }}>
         <ImpactCard
           step={3}
-          ico="// 渲染核心"
-          title="走 canvas / webgl"
+          ico="// 遷移節奏"
+          title="可並存、逐步換"
           tags={
             <>
-              <Tag>canvas</Tag>
-              <Tag>webgl</Tag>
-              <Tag>&gt;5000 nodes</Tag>
+              <Tag>3.0 ∥ 4.0</Tag>
+              <Tag>逐元件遷移</Tag>
+              <Tag>no big-bang</Tag>
             </>
           }
         >
-          4.0 以 <B>canvas、webgl</B> 為核心,因應未來 <B>Map + Topology 複雜圖示</B>
-          (高節點數、地圖底圖疊加、複雜視覺效果)的渲染需求。
+          3.0 與 4.0 可在同一專案<B>並存</B>,逐元件、逐頁面替換,<B>不必一次到位</B>;
+          不做 big-bang,風險逐步收斂、隨時可暫停。
         </ImpactCard>
         <ImpactCard
           step={4}
@@ -1433,7 +1456,7 @@ const TimeGrid: Page = () => (
           <C />
           <C />
 
-          <RowLabel>3.0 持續功能開發(快捷鍵 / Edge / 群組 / SDD)</RowLabel>
+          <RowLabel>3.0 持續功能開發(快捷鍵 / Edge / 群組 / Bug)</RowLabel>
           <C v="t" />
           <C v="t" />
           <C v="t" />
@@ -1455,7 +1478,7 @@ const TimeGrid: Page = () => (
           <C v="a" />
           <C v="a" />
           <C v="a" />
-          <C v="a" />
+          <C />
 
           <RowLabel>4.0 Map 整合</RowLabel>
           <C />
@@ -1463,7 +1486,7 @@ const TimeGrid: Page = () => (
           <C />
           <C />
           <C v="a" />
-          <C v="a" />
+          <C />
 
           <RowLabel>4.0 Beta → 遷移 → GA</RowLabel>
           <C />
@@ -1644,9 +1667,9 @@ export const meta: SlideMeta = {
 export default [
   Title,
   Timeline,
+  TimeGrid,
   Lanes,
   Maintenance,
-  TimeGrid,
   Why,
   TechSelect,
   PocGate,
